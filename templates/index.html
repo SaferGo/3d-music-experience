@@ -1,0 +1,39 @@
+<html lang="en">
+	<head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>3D Music Experience</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+   </head>
+   <body>
+      <script type="module" src="{{ url_for('static', filename= 'js/three.js') }}">
+      </script>
+      <script>
+         var scene = new THREE.Scene();
+         var camera = new THREE.PrespectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+         var render = new THREE.WebGLRenderer();
+
+         renderer.setSize(window.innerWidth, window.innerHeight);
+         document.body.appendChild(renderer.domElement);
+
+         var update = function() 
+         {
+         };
+
+         var render = function()
+         {
+            renderer.render(scene, camera);
+         };
+
+         var GameLoop = function()
+         {
+            requestAnimationFrame(GameLoop);
+
+            update();
+            render();
+         };
+
+         GameLoop();
+      </script>
+   </body>
+</html>
+	
