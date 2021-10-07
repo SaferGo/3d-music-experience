@@ -2,3 +2,12 @@ body {
    margin: 0px;
    overflow: hidden;
 }
+
+#startButton {
+    font-size: large;
+    text-align:center;
+    position: absolute;
+
+    margin: 0 auto;
+    
+}

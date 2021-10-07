@@ -1,14 +1,15 @@
 <html lang="en">
 	<head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>3D Music Experience</title>
       <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
    </head>
    <body>
 
       <video id="video" autoplay loop style="display:none">
-         <source src="/video/o1.mp4" type="video/mp4">
+         <source src="/video/o1.mp4" type="video/mp4"/>
       </video>
+      <button id="startButton">Play</button>
+
 
       <script type="module">
          import * as THREE from '/js/three.js/build/three.module.js';
@@ -20,7 +21,7 @@
          var videoTexture;
 
          window.onload = init;
-         GameLoop();
+         animation();
 
          function init() {
             scene = new THREE.Scene();
@@ -43,11 +44,16 @@
             /////////// VIDEO ////////////
             var video = document.getElementById('video');
             videoTexture = new THREE.VideoTexture(video);
-            /*videoTexture.minFiler = THREE.LinearFilter;
+            videoTexture.minFiler = THREE.LinearFilter;
             videoTexture.magFilter = THREE.LinearFileter;
             videoTexture.format = THREE.RGBFormat;
             videoTexture.generateMipmaps = false;
-            */
+
+            var startButton = document.getElementById('startButton');
+            startButton.addEventListener('click', function() {    
+               video.load();
+               video.play();
+            }, false);
 
             /////////Cube///////////////
             var cubeGeometry = new THREE.BoxGeometry(9, 5, 2);
@@ -64,23 +70,26 @@
 
             // add the output of the renderer to the html element
             document.body.appendChild(renderer.domElement);
-            render();
+            //animation();
          }
 
          function render()
          {
             renderer.render(scene, camera);
             videoTexture.needsUpdate = true;
-            // Here it causes that the render function
-            // is called at a regular interval.
-            requestAnimationFrame(render);
+
          }
 
-         function GameLoop()
+         function animation()
          {
-            
-         }
+            // Here it causes that the animation function
+            // is called at a regular interval.
+            requestAnimationFrame(animation);
 
+            scene.getObjectByName('cube').rotation.y += 0.002;
+            
+            render();
+         }
       </script>
    </body>
 </html>
