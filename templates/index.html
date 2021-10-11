@@ -5,92 +5,13 @@
    </head>
    <body>
 
-      <video id="video" autoplay loop style="display:none">
+      <!--video id="video" autoplay loop style="display:none">
          <source src="/video/o1.mp4" type="video/mp4"/>
       </video>
-      <button id="startButton">Play</button>
+      <button id="startButton">Play</button -->
 
 
-      <script type="module">
-         import * as THREE from '/js/three.js/build/three.module.js';
-
-			import { TrackballControls } from '/js/three.js/examples/jsm/controls/TrackballControls.js';
-
-         var camera, scene, renderer;
-
-         var videoTexture;
-
-         window.onload = init;
-         animation();
-
-         function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(
-                           45,
-                           window.innerWidth / window.innerHeight,
-                           0.1, 1000);
-
-            camera.position.x = 0;
-            camera.position.y = 5;
-            camera.position.z = -13;
-            camera.lookAt(scene.position);
-
-            renderer = new THREE.WebGLRenderer();
-            //background color
-            renderer.setClearColor(0x000000, 1.0);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-
-            /////////// VIDEO ////////////
-            var video = document.getElementById('video');
-            videoTexture = new THREE.VideoTexture(video);
-            videoTexture.minFiler = THREE.LinearFilter;
-            videoTexture.magFilter = THREE.LinearFileter;
-            videoTexture.format = THREE.RGBFormat;
-            videoTexture.generateMipmaps = false;
-
-            var startButton = document.getElementById('startButton');
-            startButton.addEventListener('click', function() {    
-               video.load();
-               video.play();
-            }, false);
-
-            /////////Cube///////////////
-            var cubeGeometry = new THREE.BoxGeometry(9, 5, 2);
-            var cubeMaterial = new THREE.MeshBasicMaterial({map:videoTexture});
-            //var cubeMaterial = new THREE.MeshNormalMaterial();
-
-            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            // It this way we can find it outside this function.
-            cube.name = 'cube';
-            scene.add(cube);
-            //camera.lookAt(cube.position);
-
-            ////////////////////////////
-
-            // add the output of the renderer to the html element
-            document.body.appendChild(renderer.domElement);
-            //animation();
-         }
-
-         function render()
-         {
-            renderer.render(scene, camera);
-            videoTexture.needsUpdate = true;
-
-         }
-
-         function animation()
-         {
-            // Here it causes that the animation function
-            // is called at a regular interval.
-            requestAnimationFrame(animation);
-
-            scene.getObjectByName('cube').rotation.y += 0.002;
-            
-            render();
-         }
-      </script>
+      <script type="module" src="{{ url_for('static', filename= 'js/main.js') }}"></script>
    </body>
 </html>
 	
