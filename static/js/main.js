@@ -1,3 +1,13 @@
+// Poner en otro js...
+$('#modal').on('show.bs.modal', function() {
+   $('#myInput').trigger('focus')
+})
+/////////////////////////
+
+
+
+
+
 import * as THREE from '/js/three.js/build/three.module.js';
 
 import { OrbitControls } from '/js/three.js/examples/jsm/controls/OrbitControls.js';
@@ -20,10 +30,19 @@ var videoTexture;
 var sound,audioLoader;
 var running;
 
+const menu = document.getElementById('menu');
+const btnStartGame = document.getElementById('btnStartGame');
+btnStartGame.addEventListener('click', startGame);
+
+function startGame()
+{
+   menu.style.display = 'none';
+   window.onload = init();
+}
+
 function remap(a, b, c, d, t) {
    return (t - a) / (b - a) * (d - c) + c;
 }
-
 
 function init()
 {   
@@ -147,13 +166,17 @@ function animate()
 
    prevTime = time;
 
+   if (allKeysUp() == false)
+      running = false;
+
    if (running == true) {
       var newRotCamera = remap(-1,1, -3.22886, -3.05433,Math.sin(time * 0.007));
       camera.rotation.z = newRotCamera;
    } else {
       camera.rotation.z = -3.14159;
+      //console.log(camera.rotation.y);
    }
-
+   
    /////////////////
 
    //scene.getObjectByName('cube').rotation.x += 0.02;
@@ -170,7 +193,6 @@ function animate()
    requestAnimationFrame(animate);
 }
 
-window.onload = init();
 
 function createBoxVideo()
 {  
@@ -338,38 +360,41 @@ function configureFirstPersonCam()
    camControls = new PointerLockControls(camera, renderer.domElement);
 
    const onKeyDown = function ( event ) {
-      running = true;
 		switch ( event.code ) {
          case 'ArrowUp':
 			case 'KeyW':
 				moveForward = true;
+            running = true;
 				break;
 
 			case 'ArrowLeft':
 			case 'KeyA':
 				moveLeft = true;
+            running = true;
 				break;
 
 			case 'ArrowDown':
 			case 'KeyS':
 				moveBackward = true;
+            running = true;
 				break;
 
 			case 'ArrowRight':
 			case 'KeyD':
 				moveRight = true;
+            running = true;
 				break;
 
 			case 'Space':
 				if ( canJump === true ) velocity.y += 350;
 				canJump = false;
+            running = true;
 				break;
 
 		}
 	};
 
 	const onKeyUp = function ( event ) {
-      running = false;
 
 		switch ( event.code ) {
 
@@ -392,7 +417,6 @@ function configureFirstPersonCam()
 			case 'KeyD':
 				moveRight = false;
 				break;
-
 		}
 
 	};
@@ -404,35 +428,13 @@ function configureFirstPersonCam()
 
 function insertCar()
 {
-   const loader = new OBJLoader();
 
-   // load a resource
-   loader.load(
-      // resource URL
-	   'model/car/OBJ.obj',
-	   // called when resource is loaded
-	   function ( object ) {
-         object.scale.set(0.07, 0.07, 0.07);
-         //const textureLoader = new THREE.TGALoader();
-         //const texture = textureLoader.load("model/car/Textures/falloff_Falloff.tga");
+}
 
-         //texture.wrapS = THREE.RepeatWrapping;
-         //texture.wrapT = THREE.RepeatWrapping;
-         //object.material = new THREE.MeshStandardtMaterial(
-         //   {
-         //      map: texture,
-         //   }
-         //);
-		   scene.add( object );
-	   },
-	   // called when loading is in progresses
-	   function ( xhr ) {
-		   console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-	   },
-	   // called when loading has errors
-	   function ( error ) {
+function allKeysUp()
+{
+   if (!moveForward && !moveLeft && !moveBackward && !moveRight)
+      return false;
+   return true;
 
-		   console.log( 'An error happened' );
-	   }
-   );
 }
