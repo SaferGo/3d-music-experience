@@ -1,0 +1,41 @@
+<html lang="en">
+   <head>
+      <title>3D Music Experience</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+      <link href="{{ url_for('static', filename= 'css/material.min.css') }}" rel="stylesheet">
+     
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.2.1.js"
+              integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+              crossorigin="anonymous">
+      </script>
+      <script src="{{ url_for('static', filename= 'js/forms.js') }}"></script>
+   </head>
+   <body>
+      <div id="blocker">
+         <div id="instructions">
+            <p style="font-size:45px; color:white;">
+               Click to play
+            </p>
+            <p style="color:white;">
+               Move: WASD<br/>
+               Jump: SPACE<br/>
+               Look: MOUSE
+            </p>
+         </div>
+      </div>
+
+      <video id="video" autoplay loop style="display:none">
+         <source src="/video/o1.mp4" type="video/mp4"/>
+      </video>
+      <button id="startButton">Play</button>
+
+
+      <script type="module" src="{{ url_for('static', filename= 'js/main.js') }}"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+      <script src="{{ url_for('static', filename= 'js/material.min.js')}}"></script>
+
+   </body>
+</html>

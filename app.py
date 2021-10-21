@@ -1,4 +1,4 @@
-from web_app import app
+from red_light_green_light import app
 from livereload import Server
 
 if __name__ == '__main__':

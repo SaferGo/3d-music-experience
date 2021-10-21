@@ -1,0 +1,118 @@
+<html lang="en">
+	<head>
+      <title>3D Music Experience</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+      <link href="{{ url_for('static', filename= 'css/material.min.css') }}" rel="stylesheet">
+     
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.2.1.js"
+              integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+              crossorigin="anonymous">
+      </script>
+      <script src="{{ url_for('static', filename= 'js/forms.js') }}"></script>
+   </head>
+   <body style="background-color:#353839;">
+      <div id="menu">
+         {% block content %}
+            {% if msg is defined %}
+               <div class="alert alert-dark" role="alert">
+                  {{ msg }}
+               </div>
+            {% endif %}
+         {% endblock content %}
+         <div style="top: 40%; left: 22%; position:absolute;">
+            <h1 style="font-family: 'Trebuchet MS', sans-serif; font-size: 100px;">
+               Red light,
+               <p></p>
+               Green light
+            </h1>
+            <div id="mainButtons">
+               <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#loginModal">
+                  Sign in
+               </button>
+         
+               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#registerModal">
+                  Sign up
+               </button>
+            </div>
+         </div>
+
+         <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">Log In</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                     <form method="POST" action="{{ url_for('index') }}">
+                        <div class="form-group">
+                           <label for="usernameLogin">Username</label>
+                           <input type="text" class="form-control" name="usernameLogin" id="usernameLogin" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                           <label for="passwordLogin">Password</label>
+                           <input type="password" class="form-control" name="passwordLogin" id="passwordLogin" placeholder="Password">
+                        </div>
+                        <button type='submit' value='login' name='submit' class="btn btn-primary">
+                           Submit
+                        </button>
+                     </form>
+
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">Register</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                     <form method="POST" action="{{ url_for('index') }}">
+                        <div class="form-group">
+                           <label for="emailRegistration">Email address</label>
+                           <input type="email" class="form-control" name="emailRegistration" id="emailRegistration" aria-describedby="emailHelp" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                           <label for="usernameRegistration">Username</label>
+                           <input type="text" class="form-control" name="usernameRegistration" id="usernameRegistration" placeholder="Username">
+                        </div>
+
+                        <div class="form-group">
+                           <label for="passwordRegistration">Password</label>
+                           <input type="password" class="form-control" name="passwordRegistration" id="passwordRegistration" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                           <label for="passwordRegistration2">Confirmation password</label>
+                           <input type="password" class="form-control" name="passwordRegistration2" id="passwordRegistration2" placeholder="Password">
+                        </div>
+                        <button type="submit" class="btn btn-primary" value='registration' name='submit'>Submit</button>
+                     </form>
+
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         
+      <!--video id="video" autoplay loop style="display:none">
+         <source src="/video/o1.mp4" type="video/mp4"/>
+      </video>
+      <button id="startButton">Play</button -->
+
+
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+      <script src="{{ url_for('static', filename= 'js/material.min.js')}}"></script>
+   </body>
+</html>
+	
