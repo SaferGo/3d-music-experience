@@ -5,6 +5,7 @@ import { PointerLockControls } from '/js/three.js/examples/jsm/controls/PointerL
 import { OBJLoader } from '/js/three.js/examples/jsm/loaders/OBJLoader.js';
 
 var camera, scene, renderer, controls, camControls, clock;
+var collisBoxCamera, collisBoxCube, cube1;
 
 var moveForward = false;
 var moveBackward = false;
@@ -16,9 +17,7 @@ var direction = new THREE.Vector3();
 var prevTime;
 
 var videoTexture; 
-var videoStops;
 var videoPaused;
-var lastIndex;
 
 var sound,audioLoader;
 var running;
@@ -41,6 +40,7 @@ function init()
    camera.position.y = 3;
    camera.position.z = -250;
    camera.lookAt(0, 0, 0);
+   collisBoxCamera = new THREE.Box3().setFromObject(camera);
 
    renderer = new THREE.WebGLRenderer({antialias: true});
    renderer.setClearColor(0x000000, 1.0);
@@ -48,20 +48,20 @@ function init()
    renderer.shadowMap.enabled = true;
    
    ///////////////////////////////
-   console.log(camera.rotation.z);  
    createLight();
    createFloor();
-   createWalls();
    configureFirstPersonCam();
-   insertCar();
    createGUI();
    createBoxVideo();
-   videoStops = createVideoStops();
+
+   var container = createContainer();
+   scene.add(container);
+
+   cube1 = createCube();
+   scene.add(cube1);
+   collisBoxCube = new THREE.Box3().setFromObject(cube1);
+
    videoPaused = false;
-   console.log("TODO:");
-   for (let i = 0; i < videoStops.length; i++) {
-      console.log(videoStops[i]);
-   }
 
    const blocker = document.getElementById('blocker');
    const instructions = document.getElementById('instructions');
@@ -80,15 +80,16 @@ function init()
       instructions.style.display = '';
    } );
 
-   
-   //controls = new OrbitControls(camera, renderer.domElement);
-
    clock = new THREE.Clock();
    //////////////////////////////
    /////// SOUND ///////////////
    
    const listener = new THREE.AudioListener();
    camera.add( listener );
+   
+   camera.useQuaternion = true;
+
+   const axesHelper = new THREE.AxesHelper( 5 );
 
    // create a global audio source
    sound = new THREE.Audio( listener );
@@ -125,19 +126,21 @@ function animate()
    var delta = clock.getDelta();
    const time = performance.now();
 
-   if (videoPaused == false)
-      gameLogic(time, videoStops);
-   else {
-      if (parseInt(time / 600) - videoStops[lastIndex] > 10) {
-         var vid = document.getElementById("video");
-         vid.play();
-         videoPaused = false;
-      }
+   if (videoPaused == true) {
+      var vid = document.getElementById("video");
+      vid.play();
+      videoPaused = false;
    }
+
+   if (collisBoxCube.containsPoint(camera.position))
+      console.log("TOCA!");
       
    /// Controls/////
    
-   if (camControls.isLocked === true) {
+   if (camControls.isLocked == true) {
+      if (collisBoxCube.containsPoint(camera.position))
+         console.log("TOCA!");
+
       
       const delta = (time - prevTime) / 1000;
 
@@ -148,12 +151,16 @@ function animate()
       direction.z = Number(moveForward) - Number(moveBackward);
       direction.x = Number(moveRight) - Number(moveLeft);
       direction.normalize();
-
+      if (collisBoxCube.containsPoint(camera.position)) {
+         direction.z *= -1.0;
+         direction.x *= -1.0;
+         direction.y *= -1.0;
+      }
       if (moveForward || moveBackward)
          velocity.z -= direction.z * 400.0 * delta
       if (moveLeft || moveRight)
          velocity.x -= direction.x * 400.0 * delta;
-      
+
       camControls.moveRight(- velocity.x * delta);
       camControls.moveForward(- velocity.z * delta);
       camControls.getObject().position.y += (velocity.y * delta);
@@ -171,25 +178,9 @@ function animate()
    if (allKeysUp() == false)
       running = false;
 
-   if (running == true) {
-      var newRotCamera = remap(-1,1, -3.22886, -3.05433,Math.sin(time * 0.007));
-      camera.rotation.z = newRotCamera;
-   } else {
-      camera.rotation.z = -3.14159;
-      //console.log(camera.rotation.y);
-   }
-   
    /////////////////
-
-   //var xPosDLight = scene.getObjectByName('dlight').position.x;
-   //var xNewPos = remap(-1, 1, 0, 50, Math.sin(time * 0.0005));
-   //scene.getObjectByName('dlight').position.x = xNewPos;
-   //scene.getObjectByName('dlight').target.position.set(0,0,0);
    
-   /////
    document.getElementById("counter").innerHTML = 250 - parseInt(camera.position.z);
-   /////
-  
 
    render();
 
@@ -240,21 +231,7 @@ function createLight()
    
    directionalLight.castShadow = true;
    
-   //const helper = new THREE.DirectionalLightHelper(directionalLight, 5);
-   //scene.add( helper );
-
    scene.add(directionalLight);
-   /*
-   
-   var spotLight = new THREE.SpotLight(0xffffff);
-   spotLight.position.set(5, 10, 0);
-   spotLight.castShadow = true;
-   const helper = new THREE.SpotLightHelper(spotLight, 5);
-   scene.add(helper);
-   scene.add(spotLight);
-
-   */
-   
 }
 
 function createFloor()
@@ -301,63 +278,6 @@ function createFloor()
    floorMesh.rotation.x -= Math.PI / 2;
    scene.add(floorMesh);
 
-   /*var ballGeometry = new THREE.SphereGeometry(0.8);
-   var ballMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
-   var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
-
-   ballMesh.receiveShadow = true;
-   ballMesh.castShadow = true;
-
-   //ballMesh.position.y = 1.5;
-   ballMesh.position.y = 0.9;
-   scene.add(ballMesh);
-
-   var cubeGeometry = new THREE.BoxGeometry(3, 3, 3);
-   var cubeMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
-
-   var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-   cube.receiveShadow = true;
-   cube.castShadow = true;
-
-   cube.position.x = 3;
-   cube.position.z = 2;
-   cube.position.y = 1.6;
-
-   cube.name = 'cube';
-
-   scene.add(cube);*/
-}
-
-function createWalls()
-{
-   for (let i = 0; i < 4; i++) {
-      let wallGeometry = new THREE.PlaneGeometry(500, 50, 10, 10);
-      let wallMaterial = new THREE.MeshStandardMaterial(
-         {
-            side: THREE.DoubleSide,
-            //color:0xffffff,
-            opacity: 0,
-            transparent: true
-         }
-      );
-
-      let wall = new THREE.Mesh(wallGeometry, wallMaterial);
-
-      if (i == 0)
-         wall.position.set(0, 25, 250);
-      if (i == 1)
-         wall.position.set(0, 25, -250);
-      if (i == 2) {
-         wall.rotation.y -= Math.PI / 2; 
-         wall.position.set(250, 25, 0);
-      }
-      if (i == 3) {
-         wall.rotation.y -= Math.PI / 2;
-         wall.position.set(-250, 25, 0);
-      }
-      
-      scene.add(wall);
-   }
 }
 
 function configureFirstPersonCam()
@@ -433,11 +353,6 @@ function configureFirstPersonCam()
    scene.add(camControls.getObject() );
 }
 
-function insertCar()
-{
-
-}
-
 function allKeysUp()
 {
    if (!moveForward && !moveLeft && !moveBackward && !moveRight)
@@ -468,7 +383,7 @@ function gameLogic(time, videoStops)
    var vid = document.getElementById("video");
 
    var indxTime = videoStops.indexOf(parseInt(time / 600));
-   console.log("comparando: " + parseInt(time / 600));
+   //console.log("comparando: " + parseInt(time / 600));
 
    if (indxTime != -1) {
       videoPaused = true;
@@ -477,25 +392,23 @@ function gameLogic(time, videoStops)
    }
 }
 
-function createVideoStops()
+function createContainer()
 {
-   var lastStop = 0;
-   var stops = [];
-   
-   var newStop;
-   for (let i = 1; i <= 24; i++) {
-      newStop = getRandomInt(20) + lastStop;
-      if (newStop - lastStop < 15) {
-         i -= 1;
-         continue;
-      }
+   var geometry = new THREE.BoxGeometry(700, 700, 700, 10, 10, 10);
+   var material = new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true});
+   var cube = new THREE.Mesh(geometry, material);
 
-      if (newStop > 240)
-         break;
+   return cube;
+}
 
-      stops.push(newStop);
-      lastStop = newStop;
-   }
-   
-   return stops;
+function createCube()
+{
+   var geometry = new THREE.BoxGeometry(5, 5, 5, 5, 5, 5);
+   var material = new THREE.MeshBasicMaterial({color: 0xfffff});
+   var cube = new THREE.Mesh(geometry, material);
+   cube.position.x = 0;
+   cube.position.y = 2.5;
+   cube.position.z = 0;
+
+   return cube;
 }
