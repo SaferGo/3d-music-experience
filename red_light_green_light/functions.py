@@ -1,12 +1,15 @@
 from red_light_green_light.models import User
-from red_light_green_light import db, bcrypt, app
+from red_light_green_light import bcrypt, app
 from flask import session, redirect, jsonify, url_for, render_template, flash
 import requests
-#from flask_sqlalchemy import SQLAlchemy
+
+from red_light_green_light.base import Session
+
+sessionDB = Session()
 
 
 def login(username, password):
-    userAccount = User.query.filter_by(username = username).first()
+    userAccount = sessionDB.query(User).filter_by(username = username).first()
     if userAccount is None:
         return render_template('index.html', msg="You have mistyped your username")
 
@@ -21,15 +24,16 @@ def login(username, password):
     return redirect(url_for('game'))
 
 def register(newUser):
-    userExists = User.query.filter_by(username = newUser.username).first()
-    emailExists = User.query.filter_by(email = newUser.email).first()
+    userExists = sessionDB.query(User).filter_by(username = newUser.username).first()
+    emailExists = sessionDB.query(User).filter_by(email = newUser.email).first()
 
     if userExists:
         return render_template('index.html', msg="Username already taken!")
     if emailExists:
         return render_template('index.html', msg="Email already used!")
 
-    db.session.add(newUser)
-    db.session.commit()
+    sessionDB.add(newUser)
+    sessionDB.commit()
+    sessionDB.close()
 
     return render_template('index.html', msg="Account created!")

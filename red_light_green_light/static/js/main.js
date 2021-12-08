@@ -1,11 +1,9 @@
-import * as THREE from '/js/three.js/build/three.module.js';
+import * as THREE from 'https://cdn.skypack.dev/three';
 
-import { OrbitControls } from '/js/three.js/examples/jsm/controls/OrbitControls.js';
-import { PointerLockControls } from '/js/three.js/examples/jsm/controls/PointerLockControls.js';
-import { OBJLoader } from '/js/three.js/examples/jsm/loaders/OBJLoader.js';
+import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/PointerLockControls.js';
 
 var camera, scene, renderer, controls, camControls, clock;
-var collisBoxCamera, collisBoxCube, cube1;
 
 var moveForward = false;
 var moveBackward = false;
@@ -40,7 +38,6 @@ function init()
    camera.position.y = 3;
    camera.position.z = -250;
    camera.lookAt(0, 0, 0);
-   collisBoxCamera = new THREE.Box3().setFromObject(camera);
 
    renderer = new THREE.WebGLRenderer({antialias: true});
    renderer.setClearColor(0x000000, 1.0);
@@ -56,10 +53,6 @@ function init()
 
    var container = createContainer();
    scene.add(container);
-
-   cube1 = createCube();
-   scene.add(cube1);
-   collisBoxCube = new THREE.Box3().setFromObject(cube1);
 
    videoPaused = false;
 
@@ -81,7 +74,7 @@ function init()
    } );
 
    clock = new THREE.Clock();
-   //////////////////////////////
+
    /////// SOUND ///////////////
    
    const listener = new THREE.AudioListener();
@@ -103,12 +96,7 @@ function init()
 	   sound.play();
    });
    
-
-
-   /////////////////////////////
    running = false;
-   /////////////////////////////
-   
    
    document.body.appendChild(renderer.domElement);
    requestAnimationFrame(animate);
@@ -132,15 +120,8 @@ function animate()
       videoPaused = false;
    }
 
-   if (collisBoxCube.containsPoint(camera.position))
-      console.log("TOCA!");
-      
    /// Controls/////
-   
    if (camControls.isLocked == true) {
-      if (collisBoxCube.containsPoint(camera.position))
-         console.log("TOCA!");
-
       
       const delta = (time - prevTime) / 1000;
 
@@ -151,11 +132,7 @@ function animate()
       direction.z = Number(moveForward) - Number(moveBackward);
       direction.x = Number(moveRight) - Number(moveLeft);
       direction.normalize();
-      if (collisBoxCube.containsPoint(camera.position)) {
-         direction.z *= -1.0;
-         direction.x *= -1.0;
-         direction.y *= -1.0;
-      }
+
       if (moveForward || moveBackward)
          velocity.z -= direction.z * 400.0 * delta
       if (moveLeft || moveRight)
@@ -178,7 +155,6 @@ function animate()
    if (allKeysUp() == false)
       running = false;
 
-   /////////////////
    
    document.getElementById("counter").innerHTML = 250 - parseInt(camera.position.z);
 

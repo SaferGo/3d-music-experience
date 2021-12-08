@@ -1,8 +1,22 @@
 version: "3.7"
 services:
-   web:
+   app:
       build: .
       ports:
-         - "5000:5000"
+         - "8000:8000"
+      environment:
+         - FLASK_APP=app.py
+
+   db:
+      image: postgres:latest
+      environment:
+         POSTGRES_DB: rg_light
+         POSTGRES_USER: santi
+         POSTGRES_PASSWORD: angelita2012
+         POSTGRES_HOST: db
+      ports:
+         - 5432:5432
       volumes:
-         - .:/dockerCode
+         - "postgres-data:/var/lib/postgresql/data"
+volumes:
+   postgres-data:

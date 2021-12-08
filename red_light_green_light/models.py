@@ -1,10 +1,14 @@
-from red_light_green_light import db
+from sqlalchemy import Column, String, Integer, Date, Text
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(20), nullable=False)
+from red_light_green_light.base import Base
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(20), nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
+    password = Column(Text, nullable=False)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.password}')"
